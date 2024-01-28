@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 
 import University from "../schemas/university.model.js";
 import authenticateUniversity from "../middlewares/authenticateUniversity.js";
@@ -378,15 +379,30 @@ router.get("/universities", async (req, res) => {
   }
 });
 
-router.get("/universities/:universityId/departments", async (req, res) => {
+router.get("/universities/:identifier/departments", async (req, res) => {
   try {
-    const { universityId } = req.params;
-    const university = await University.findById(universityId, "departments");
+    const { identifier } = req.params;
+
+    // Check if identifier is a valid ObjectId (assuming universityId is ObjectId)
+    const isObjectId = mongoose.Types.ObjectId.isValid(identifier);
+
+    let query;
+    if (isObjectId) {
+      // If identifier is a valid ObjectId, search by universityId
+      query = { universityId: identifier };
+    } else {
+      // If identifier is not a valid ObjectId, search by authId
+      query = { authId: identifier };
+    }
+
+    const university = await University.findOne(query, "departments");
+
     if (!university) {
       return res.status(404).json({
         message: "University not found",
       });
     }
+
     return res.status(200).json({
       departments: university.departments,
     });
