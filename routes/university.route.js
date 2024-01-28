@@ -385,11 +385,12 @@ router.get("/universities/:identifier/departments", async (req, res) => {
 
     // Check if identifier is a valid ObjectId (assuming universityId is ObjectId)
     const isObjectId = mongoose.Types.ObjectId.isValid(identifier);
+    console.log(isObjectId);
 
     let query;
     if (isObjectId) {
       // If identifier is a valid ObjectId, search by universityId
-      query = { universityId: identifier };
+      query = { _id: identifier };
     } else {
       // If identifier is not a valid ObjectId, search by authId
       query = { authId: identifier };
