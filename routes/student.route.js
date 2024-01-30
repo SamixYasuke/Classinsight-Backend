@@ -94,7 +94,7 @@ router.get("/check-auth-id/:authId", async (req, res) => {
 
 router.get("/forms", authenticateStudent, async (req, res) => {
   try {
-    const { matriculationNumber } = req.authenticatedStudent;
+    const { matriculationNumber, universityId } = req.authenticatedStudent;
     const status = req.query.status; // "submitted" or "unsubmitted"
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 5;
@@ -105,6 +105,7 @@ router.get("/forms", authenticateStudent, async (req, res) => {
 
     const allCourseFeedbackForms = await CourseFeedbackForm.find({
       formIsActive: true,
+      universityId,
     }).sort({ createdAt: -1 });
 
     const submittedCourseFeedbackFormIds = feedbacks.map((feedback) => {
